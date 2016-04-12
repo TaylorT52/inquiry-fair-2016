@@ -1,70 +1,71 @@
 'use strict';
 
-exports.getSpeed = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-  **/
-  
-  
-  var examples = {};
-  examples['application/json'] = {
-  "value" : 123
-};
-  
-  if(Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  }
-  else {
-    res.end();
-  }
-  
-  
+var controller = require('../services/AdvancedServo');
+
+var getSpeed = exports.getSpeed = function(args, res, next) {
+  var response = controller.speed;  
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(response, null, 2));
 }
 
-exports.getSteeringPosition = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-  **/
-  
-  
-  var examples = {};
-  examples['application/json'] = {
-  "value" : 123
-};
-  
-  if(Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  }
-  else {
-    res.end();
-  }
-  
-  
+var getSteeringPosition = exports.getSteeringPosition = function(args, res, next) {
+  var response = controller.steering
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(response, null, 2));
 }
 
 exports.setSpeed = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-  * speed (Integer)
-  * wait (Boolean)
-  **/
-  // no response value expected for this operation
-  
-  
-  res.end();
+  var ticks = 0;
+  var speed = args.speed.value;
+
+  controller.setSpeed(speed);
+
+  function doWait() {
+    ticks += 1;
+    var delta = Math.abs(controller.speed.value - speed);
+    if(delta <= 1) {
+      res.end();
+    }
+    else if (ticks > 30) {
+      console.log('timed out waiting');
+      res.end();
+    }
+    else {
+      setTimeout(doWait, 20);
+    }
+  }
+
+  if(args.wait.value) {
+    doWait();
+  }
+  else {
+    res.end();
+  }
 }
 
 exports.setSteeringPosition = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-  * position (Integer)
-  * wait (Boolean)
-  **/
-  // no response value expected for this operation
-  
-  
-  res.end();
-}
+  var ticks = 0;
+  var position = args.position.value;
+  controller.setSteering(position);
 
+  function doWait() {
+    ticks += 1;
+    if(Math.abs(controller.steering.value - position) <= 1) {
+      res.end();
+    }
+    else if (ticks > 30) {
+      console.log('timed out waiting');
+      res.end();
+    }
+    else {
+      setTimeout(doWait, 20);
+    }
+  }
+  if(args.wait.value) {
+    doWait();
+  }
+  else {
+    res.end();
+  }
+
+}
