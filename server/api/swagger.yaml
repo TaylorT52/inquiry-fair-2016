@@ -1,0 +1,86 @@
+---
+swagger: "2.0"
+info:
+  description: "Taylor"
+  version: "1.0.0"
+  title: "Taylor Inquiry Fair"
+paths:
+  /motor:
+    get:
+      tags:
+      - "Robot"
+      operationId: "getSpeed"
+      parameters: []
+      responses:
+        200:
+          description: "current speed"
+          schema:
+            $ref: "#/definitions/SpeedResponse"
+      x-swagger-router-controller: "Robot"
+  /motor/{speed}:
+    post:
+      tags:
+      - "Robot"
+      operationId: "setSpeed"
+      parameters:
+      - name: "speed"
+        in: "path"
+        required: true
+        type: "integer"
+        maximum: 100
+        minimum: -100
+        format: "int32"
+      - name: "wait"
+        in: "query"
+        required: false
+        type: "boolean"
+        default: false
+      responses:
+        default:
+          description: "ok"
+      x-swagger-router-controller: "Robot"
+  /steering:
+    get:
+      tags:
+      - "Robot"
+      operationId: "getSteeringPosition"
+      parameters: []
+      responses:
+        200:
+          description: "current steering diretion"
+          schema:
+            $ref: "#/definitions/DirectionResponse"
+      x-swagger-router-controller: "Robot"
+  /steering/{position}:
+    post:
+      tags:
+      - "Robot"
+      operationId: "setSteeringPosition"
+      parameters:
+      - name: "position"
+        in: "path"
+        required: true
+        type: "integer"
+        maximum: 100
+        minimum: -100
+        format: "int32"
+      - name: "wait"
+        in: "query"
+        required: false
+        type: "boolean"
+        default: false
+      responses:
+        default:
+          description: "ok"
+      x-swagger-router-controller: "Robot"
+definitions:
+  DirectionResponse:
+    properties:
+      value:
+        type: "integer"
+        format: "int32"
+  SpeedResponse:
+    properties:
+      value:
+        type: "integer"
+        format: "int32"
