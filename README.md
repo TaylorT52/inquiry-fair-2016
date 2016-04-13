@@ -1,2 +1,2 @@
 # inquiry-fair-2016
-My project!
+My project! It is awesome =)
